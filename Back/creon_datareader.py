@@ -1,4 +1,3 @@
-
 # coding=utf-8
 import sys
 import os
@@ -157,13 +156,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if reset:
             self.f_sv_code_df = pd.DataFrame(columns=('종목코드', '종목명'))
         for i, row in self.sv_code_df.iterrows():
-            if keyword in row['종목코드'] + row['종목명']:
+            if keyword == row['종목코드']:  # 정확한 일치 조건으로 변경
                 self.f_sv_code_df = self.f_sv_code_df.append(row, ignore_index=True)
 
         if reset:
             self.f_db_code_df = pd.DataFrame(columns=('종목코드', '종목명', '갱신날짜'))
         for i, row in self.db_code_df.iterrows():
-            if keyword in row['종목코드'] + row['종목명']:
+            if keyword == row['종목코드']:  # 정확한 일치 조건으로 변경
                 self.f_db_code_df = self.f_db_code_df.append(row, ignore_index=True)
 
         self.f_sv_view_model = PandasModel(self.f_sv_code_df)
