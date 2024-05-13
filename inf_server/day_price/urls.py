@@ -1,7 +1,7 @@
 # day_price/urls.py
 from django.urls import path
-from .views import StockDataAPIView
+from . import views
 
 urlpatterns = [
-    path('api/stockdata/', StockDataAPIView.as_view(), name='stockdata-api'),
+    path('crawl/', views.crawl_data, name='crawl-data'),
 ]
