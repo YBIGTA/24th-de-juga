@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'day_price',
-    'django_apscheduler',
-    'scheduler',
 ]
 
 MIDDLEWARE = [
