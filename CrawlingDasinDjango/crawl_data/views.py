@@ -24,6 +24,7 @@ def crawl_data(request):
         ticker = data.get("ticker", "")
 
         start_date_str = data.get("start_date", "")
+        print(start_date_str)
         end_date = add_business_days(start_date_str, 5)
 
         response_data = yf.download(ticker, start=start_date_str, end=end_date.strftime('%Y-%m-%d'))
