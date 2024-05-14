@@ -1,0 +1,24 @@
+spring:
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: UTC
+logging:
+  level:
+    team:
+      jiv: TRACE
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+      hibernate:
+        SQL: DEBUG
+server:
+  port: 8888
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    csrf:
+      enabled: true
+  show-actuator: true
