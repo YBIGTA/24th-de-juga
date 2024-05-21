@@ -86,11 +86,12 @@ def home():
 @app.route('/inference/', methods=['POST'])
 def inference():
     try:
-        data = request.get_json(force=True)
+        data = request.get_json()
         print(f"Received data: {data}")
 
         # 데이터를 DataFrame으로 변환
-        df = pd.DataFrame([data])
+        df = pd.DataFrame(data)
+        print(df)
 
         # 예측 수행
         predicted_close = predict_next_close(df, model_path, scaler_path)

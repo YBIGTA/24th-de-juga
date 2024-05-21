@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
 import numpy as np
-from datetime import datetime
 
 def add_business_days(start_date_str, add_days):
     start_date = np.datetime64(start_date_str, 'D')
@@ -17,6 +16,7 @@ def parse_date(date_str):
         return datetime.strptime(date_str, '%Y-%m-%d')
     except ValueError:
         raise ValueError("Invalid date format. Please use YYYY-MM-DD.")
+
 @require_http_methods(["POST"])
 def crawl_data(request):
     try:
@@ -24,7 +24,8 @@ def crawl_data(request):
         ticker = data.get("ticker", "")
 
         start_date_str = data.get("start_date", "")
-        end_date = add_business_days(start_date_str, 5)
+        end_date = add_business_days(start_date_str, 7)
+        print(start_date_str, end_date)
 
         response_data = yf.download(ticker, start=start_date_str, end=end_date.strftime('%Y-%m-%d'))
         if response_data.empty:
