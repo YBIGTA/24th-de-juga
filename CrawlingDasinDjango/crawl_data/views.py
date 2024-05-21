@@ -31,6 +31,9 @@ def crawl_data(request):
         if response_data.empty:
             return JsonResponse({'error': 'No data available for the specified date range'}, status=404)
 
+        response_data.drop(columns=['Adj Close'], inplace=True)
+        response_data.rename(columns=lambda x: x.lower(), inplace=True)
+
         response_data.index = response_data.index.strftime('%Y-%m-%d')
         return JsonResponse(response_data.to_dict())
 

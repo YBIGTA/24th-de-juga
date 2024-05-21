@@ -5,8 +5,8 @@ import requests
 # Step 1: Django 서버에서 데이터 받아오기
 django_url = 'http://127.0.0.1:8000/api/crawl/'  # Django 서버의 엔드포인트 URL
 payload = {
-    "ticker": "AAPL",
-    "start_date": "2024-05-10"
+    "ticker": "000020.ks",
+    "start_date": "2024-04-15"
 }
 
 response = requests.post(django_url, json=payload)
