@@ -89,6 +89,12 @@ def predict_next_close(df, model_path, scaler_path):
     print("Predicted close:", predicted_close)  # 디버그 출력 추가
     return predicted_close[0]
 
+def convert_ticker(ticker):
+    # 숫자 부분 추출
+    number_part = ticker.split('.')[0]
+    # 'A'를 앞에 추가
+    converted_ticker = 'A' + number_part
+    return converted_ticker
 @app.route('/')
 def home():
     return 'This is Home!'
@@ -103,6 +109,9 @@ def inference():
         ticker = data.pop('ticker', None)
         if not ticker:
             raise ValueError("Ticker must be provided")
+
+        ticker = convert_ticker(ticker)
+
         print(ticker)
         base_model_path = 'model'
         base_scaler_path = 'model'

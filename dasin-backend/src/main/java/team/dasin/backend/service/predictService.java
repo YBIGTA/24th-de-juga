@@ -8,21 +8,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import team.dasin.backend.form.crawlingDto;
+import team.dasin.backend.form.inferenceDto;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-public class crawlingService {
+public class predictService {
 
-    private final WebClient webClient;
+    private final WebClient crawlWebClient;
+    private final WebClient inferenceWebClient;
 
-    public crawlingService() {
-        this.webClient = WebClient.create("http://localhost:8000");
+    public predictService() {
+        this.crawlWebClient = WebClient.create("http://localhost:8000");
+        this.inferenceWebClient = WebClient.create("http://localhost:5000");
     }
 
-    public Mono<Map> crawl(String ticker) {
+    public Mono<Map> predict(String ticker) {
         crawlingDto crawlingDto = new crawlingDto(ticker, LocalDate.now().toString());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = "";
@@ -33,11 +36,20 @@ public class crawlingService {
             e.printStackTrace();
         }
 
-        return webClient.post()
+        Mono<Map> response = crawlWebClient.post()
                 .uri("/api/crawl/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(json)
                 .retrieve()
                 .bodyToMono(Map.class);
+
+        Mono<Map> prediction =  inferenceWebClient.post()
+                .uri("/inference/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(response)
+                .retrieve()
+                .bodyToMono(Map.class);
+
+        return prediction;
     }
 }

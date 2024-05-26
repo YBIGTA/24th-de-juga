@@ -8,33 +8,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import team.dasin.backend.form.crawlingDto;
+import team.dasin.backend.form.inferenceDto;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-public class crawlingService {
+public class inferenceService {
 
     private final WebClient webClient;
 
-    public crawlingService() {
-        this.webClient = WebClient.create("http://localhost:8000");
+    public inferenceService() {
+        this.webClient = WebClient.create("http://localhost:5000");
     }
 
-    public Mono<Map> crawl(String ticker) {
-        crawlingDto crawlingDto = new crawlingDto(ticker, LocalDate.now().toString());
+    public Mono<Map> inference(inferenceDto inferenceDto) {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = "";
 
         try {
-            json = objectMapper.writeValueAsString(crawlingDto);
+            json = objectMapper.writeValueAsString(inferenceDto);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         return webClient.post()
-                .uri("/api/crawl/")
+                .uri("/inference/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(json)
                 .retrieve()

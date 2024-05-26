@@ -11,5 +11,5 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class crawlingDto {
     private String ticker;
-    private LocalDate start_date;
+    private String end_date;
 }
