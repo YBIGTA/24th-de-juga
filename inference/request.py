@@ -4,14 +4,24 @@ import requests
 
 # Step 1: Django 서버에서 데이터 받아오기
 django_url = 'http://127.0.0.1:8000/api/crawl/'  # Django 서버의 엔드포인트 URL
+ticker='000100.ks'
+def convert_ticker(ticker):
+    # 숫자 부분 추출
+    number_part = ticker.split('.')[0]
+    # 'A'를 앞에 추가
+    converted_ticker = 'A' + number_part
+    return converted_ticker
+converted_ticker=convert_ticker(ticker)
+print(f"Original ticker: {ticker}")
+print(f"Converted ticker: {converted_ticker}")
 payload = {
-    "ticker": "000020.ks",
-    "start_date": "2024-04-15"
+    "ticker": ticker
 }
 
 response = requests.post(django_url, json=payload)
 if response.status_code == 200:
     data = response.json()
+    data['ticker'] = converted_ticker
 else:
     print("Failed to get data from Django server")
     data = []

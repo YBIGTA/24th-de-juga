@@ -3,14 +3,25 @@ import torch
 import pickle
 import numpy as np
 import pandas as pd
+import os
+
+
 
 app = Flask(__name__)
+#model_path='model/A000080.pth'
+#scaler_path='model/A000080.pkl'
+#모델과 스케일러 파일 경로 설정
+def get_paths(ticker, base_model_path, base_scaler_path):
+   model_path = os.path.join(base_model_path, f"{ticker}.pth")
+   scaler_path = os.path.join(base_scaler_path, f"{ticker}.pkl")
+   return model_path, scaler_path
 
-# 모델과 스케일러 파일 경로 설정
-model_path = 'model/GRU.pth'
-scaler_path = 'model/scaler_GRU.pkl'
+#base_model_path = 'model'
+#base_scaler_path = 'model'
+#get_paths(converted_ticker, base_model_path, base_scaler_path)
+#print(model_path, scaler_path)
 
-# GRU 모델 클래스 정의
+# 예측 함수 정의
 class GRU(torch.nn.Module):
     def __init__(self, num_classes, input_size, hidden_size, num_layers, seq_length):
         super(GRU, self).__init__()
@@ -35,7 +46,6 @@ class GRU(torch.nn.Module):
         out = self.fc(out)
         return out
 
-# 예측 함수 정의
 def predict_next_close(df, model_path, scaler_path):
     print("Starting prediction...")  # 디버그 출력 추가
     print(f"Model path: {model_path}")  # 디버그 출력 추가
@@ -86,8 +96,18 @@ def home():
 @app.route('/inference/', methods=['POST'])
 def inference():
     try:
-        data = request.get_json()
+        # 데이터 받아오기 (price+ticker)
+        data= request.get_json()
         print(f"Received data: {data}")
+        # 티커만 추출하기 위해 pop() 함수 사용
+        ticker = data.pop('ticker', None)
+        if not ticker:
+            raise ValueError("Ticker must be provided")
+        print(ticker)
+        base_model_path = 'model'
+        base_scaler_path = 'model'
+        model_path, scaler_path = get_paths(ticker, base_model_path, base_scaler_path)
+
 
         # 데이터를 DataFrame으로 변환
         df = pd.DataFrame(data)
