@@ -9,3 +9,25 @@
 **/._.DS_Store
 
 __pycache__/
+
+# Node.js 관련 디렉토리 및 파일 무시
+node_modules/
+dist/
+
+# 파이썬 __pycache__ 디렉토리 무시
+**/__pycache__/
+*.pyc
+*.pyo
+
+# 환경 설정 파일 무시
+.env
+
+# OS 생성 파일 무시
+.DS_Store
+Thumbs.db
+
+# 특정 디렉토리 무시
+front/node_modules/.bin/
+CrawlingDasinDjango/crawl_data/__pycache__/
+
+*.pyc

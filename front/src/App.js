@@ -46,7 +46,7 @@ function App() {
         selectedStocks.forEach(stock => {
             const serverUrl = `http://localhost:8888/predict/${stock.code}.ks`;
 
-            axios.get(serverUrl)
+            axios.post(serverUrl)
                 .then(response => {
                     // 성공적으로 데이터를 받아온 경우의 처리
                     console.log(`예상 수익률 for ${stock.code}:`, response.data);
