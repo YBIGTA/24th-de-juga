@@ -2,6 +2,7 @@ package team.dasin.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ public class predictController {
     @Operation(summary = "predict")
     @ResponseBody
     @PostMapping("/predict/{ticker}")
+    @CrossOrigin(origins = "http://localhost:3000")
     public Mono<TreeMap<String, Object>> predict(@PathVariable final String ticker){
         return predictService.predict(ticker);
     }
