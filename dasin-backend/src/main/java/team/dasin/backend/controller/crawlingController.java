@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,13 +23,8 @@ public class crawlingController {
 
     @Operation(summary = "crawling")
     @ResponseBody
-    @PostMapping("/crawling")
-    public Mono<Map> performCrawling(@RequestBody final crawlingDto crawlingDto){
-        return crawlingService.crawl(crawlingDto);
-    }
-
-    @GetMapping("/demo")
-    public String demo(){
-        return "Demo Page";
+    @PostMapping("/crawling/{ticker}")
+    public Mono<Map> performCrawling(@PathVariable final String ticker){
+        return crawlingService.crawl(ticker);
     }
 }

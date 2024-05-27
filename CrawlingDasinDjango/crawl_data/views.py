@@ -1,33 +1,52 @@
-from datetime import datetime, timedelta
-from django.shortcuts import render
-import yfinance as yf
+from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
-import numpy as np
+import pandas as pd
+from pandas.tseries.holiday import AbstractHolidayCalendar, Holiday as PandasHoliday
+from pandas.tseries.offsets import CustomBusinessDay
+import yfinance as yf
+from .models import Holiday
 
-def add_business_days(start_date_str, add_days):
-    start_date = np.datetime64(start_date_str, 'D')
-    business_days_later = np.busday_offset(start_date, add_days, roll='forward')
-    return business_days_later.astype(datetime)
+class KoreaHolidayCalendar(AbstractHolidayCalendar):
+    rules = [PandasHoliday("Holiday", year=d.date.year, month=d.date.month, day=d.date.day) for d in
+             Holiday.objects.all()]
 
-def parse_date(date_str):
-    try:
-        return datetime.strptime(date_str, '%Y-%m-%d')
-    except ValueError:
-        raise ValueError("Invalid date format. Please use YYYY-MM-DD.")
+kr_trading_business_day = CustomBusinessDay(calendar=KoreaHolidayCalendar())
+
+
+def subtract_business_days(end_date_str, subtract_days):
+    end_date = pd.to_datetime(end_date_str)
+
+    if end_date.weekday() >= 5 or end_date in kr_trading_business_day.holidays:
+        end_date = end_date - kr_trading_business_day
+
+    current_date = end_date
+    days_subtracted = 0
+
+    while days_subtracted < subtract_days:
+        current_date -= pd.Timedelta(days=1)
+        if current_date in kr_trading_business_day.holidays or current_date.weekday() >= 5:
+            print(f"{current_date} is a holiday or weekend, skipping.")
+        else:
+            days_subtracted += 1
+            print(f"Subtracting {current_date} as a business day.")
+
+    return current_date
+
 
 @require_http_methods(["POST"])
 def crawl_data(request):
     try:
         data = json.loads(request.body)
         ticker = data.get("ticker", "")
+        end_date_str = data.get("end_date", "")
+        end_date = pd.to_datetime(end_date_str)
+        end_date_inclusive = end_date + pd.Timedelta(days=1)
 
-        start_date_str = data.get("start_date", "")
-        end_date = add_business_days(start_date_str, 7)
-        print(start_date_str, end_date)
+        start_date = subtract_business_days(end_date_str, 6)
 
-        response_data = yf.download(ticker, start=start_date_str, end=end_date.strftime('%Y-%m-%d'))
+        response_data = yf.download(ticker, start=start_date.strftime('%Y-%m-%d'), end=end_date_inclusive.strftime('%Y-%m-%d'))
         if response_data.empty:
             return JsonResponse({'error': 'No data available for the specified date range'}, status=404)
 
