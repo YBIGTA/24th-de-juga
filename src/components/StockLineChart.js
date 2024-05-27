@@ -22,7 +22,7 @@ const sevenDates = recentDates.map(date => {
 
 export default function StockLineChart({width, height, target, name}) {
     // 7일치는 크롤링 시세, 8일째는 예상값
-  const sevenDayData = [2000, 3000, 2000, 2780, 2890, 3100, 3200];
+  const sevenDayData = [2000, 3000, 2000, 2780, 2890, 3100, 2900];
   // 마지막 타겟값이 그 직전 날의 값보다 높은지 확인하여 색상 설정
   const customColor = sevenDayData[sevenDayData.length - 1] > sevenDayData[sevenDayData.length - 2] ? ["#E7091B"] : ['#0066ff'];
 

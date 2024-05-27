@@ -63,20 +63,20 @@ function App() {
     if (state === false) {
         alert("수익률 예측 요청");
 
-        // // Redux에 저장된 모든 종목 코드를 사용하여 API 요청
-        // selectedStocks.forEach(stock => {
-        //     const serverUrl = `http://localhost:8888/predict/${stock.code}`;
-        //
-        //     axios.get(serverUrl)
-        //         .then(response => {
-        //             // 성공적으로 데이터를 받아온 경우의 처리
-        //             console.log(`예상 수익률 for ${stock.code}:`, response.data);
-        //         })
-        //         .catch(error => {
-        //             // 요청이 실패한 경우의 처리
-        //             console.error(`Error fetching prediction for ${stock.code}:`, error);
-        //         });
-        // });
+        // Redux에 저장된 모든 종목 코드를 사용하여 API 요청
+        selectedStocks.forEach(stock => {
+            const serverUrl = `http://127.0.0.1:8888/predict/${stock.code}.ks`;
+
+            axios.get(serverUrl)
+                .then(response => {
+                    // 성공적으로 데이터를 받아온 경우의 처리
+                    console.log(`예상 수익률 for ${stock.code}:`, response.data);
+                })
+                .catch(error => {
+                    // 요청이 실패한 경우의 처리
+                    console.error(`Error fetching prediction for ${stock.code}:`, error);
+                });
+        });
     }
     setState(!state);
 }
