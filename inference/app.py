@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 
-
+from flask_cors import CORS
 
 app = Flask(__name__)
 #model_path='model/A000080.pth'
@@ -95,6 +95,10 @@ def convert_ticker(ticker):
     # 'A'를 앞에 추가
     converted_ticker = 'A' + number_part
     return converted_ticker
+
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:8888"]}}, supports_credentials=True)
+
 @app.route('/')
 def home():
     return 'This is Home!'
