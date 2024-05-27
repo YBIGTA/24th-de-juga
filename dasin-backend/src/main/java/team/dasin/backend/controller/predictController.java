@@ -9,20 +9,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import team.dasin.backend.service.crawlingService;
+import team.dasin.backend.service.predictService;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 @RestController
 @RequiredArgsConstructor
 public class predictController {
 
-    private final crawlingService crawlingService;
+    private final predictService predictService;
 
     @Operation(summary = "predict")
     @ResponseBody
     @PostMapping("/predict/{ticker}")
-    public Mono<Map> predict(@PathVariable final String ticker){
-        return crawlingService.crawl(ticker);
+    public Mono<TreeMap<String, Object>> predict(@PathVariable final String ticker){
+        return predictService.predict(ticker);
     }
 
     @GetMapping("/demo")

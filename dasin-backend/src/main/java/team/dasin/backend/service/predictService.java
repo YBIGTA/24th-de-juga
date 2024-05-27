@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import team.dasin.backend.form.crawlingDto;
-import team.dasin.backend.form.inferenceDto;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.TreeMap;
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +25,7 @@ public class predictService {
         this.inferenceWebClient = WebClient.create("http://localhost:5000");
     }
 
-    public Mono<Map> predict(String ticker) {
+    public Mono<TreeMap<String, Object>> predict(String ticker) {
         crawlingDto crawlingDto = new crawlingDto(ticker, LocalDate.now().toString());
         ObjectMapper objectMapper = new ObjectMapper();
         String json = "";
@@ -43,13 +43,37 @@ public class predictService {
                 .retrieve()
                 .bodyToMono(Map.class);
 
-        Mono<Map> prediction =  inferenceWebClient.post()
-                .uri("/inference/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(response)
-                .retrieve()
-                .bodyToMono(Map.class);
 
-        return prediction;
+        return response.flatMap(crawlResult -> {
+            crawlResult.put("ticker", ticker);
+            String crawlJson = "";
+            try {
+                crawlJson = objectMapper.writeValueAsString(crawlResult);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            Mono<Map> prediction = inferenceWebClient.post()
+                    .uri("/inference/")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(crawlJson)
+                    .retrieve()
+                    .bodyToMono(Map.class);
+
+            return prediction.map(predictionResult -> {
+                TreeMap<String, Object> sortedResult = new TreeMap<>();
+
+                Map<String, Object> closePrices = (Map<String, Object>) crawlResult.get("close");
+                for (Map.Entry<String, Object> entry : closePrices.entrySet()) {
+                    sortedResult.put(entry.getKey(), ((Number) entry.getValue()).floatValue());
+                }
+
+                String predictionDate = LocalDate.now().plusDays(1).toString();
+                Float predictionValue = ((Number) predictionResult.get("prediction")).floatValue();
+                sortedResult.put(predictionDate, predictionValue);
+
+                return sortedResult;
+            });
+        });
     }
 }
